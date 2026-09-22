@@ -534,10 +534,53 @@ main {
   border-color: #475569;
 }
 
-.export-grid {
+.export-grid, .export-actions-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 8px;
+}
+
+.export-actions-grid .btn-primary,
+.export-actions-grid .btn-secondary {
+  width: 100%;
+  padding: 10px 12px;
+  font-size: 0.85rem;
+}
+
+.usage-guide-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+  padding: 14px;
+}
+
+.guide-items {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.guide-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  font-size: 0.82rem;
+  line-height: 1.45;
+  color: var(--text-secondary);
+  background: rgba(15, 23, 42, 0.45);
+  padding: 8px 10px;
+  border-radius: var(--radius-sm);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.guide-icon {
+  font-size: 1.1rem;
+  flex-shrink: 0;
+  line-height: 1;
+}
+
+.guide-item strong {
+  color: var(--text-primary);
 }
 
 /* Toast Notification */
@@ -631,8 +674,23 @@ main {
    TABLET & MOBILE RESPONSIVE STYLES
    ========================================== */
 
+/* Mobile Navigation Tabs (Hidden by default on Desktop) */
+.mobile-nav-tabs {
+  display: none;
+}
+
+/* Desktop Defaults (Screen > 860px) */
+@media (min-width: 861px) {
+  .mobile-nav-tabs {
+    display: none !important;
+  }
+  [data-panel] {
+    display: flex !important;
+  }
+}
+
 /* Tablet Optimization (769px ~ 1024px) */
-@media (max-width: 1024px) {
+@media (min-width: 769px) and (max-width: 1024px) {
   main {
     grid-template-columns: 290px 1fr;
     height: auto;
@@ -663,11 +721,11 @@ main {
   }
 }
 
-/* Mobile & Small Tablet Optimization (<= 768px) */
+/* Mobile Optimization (<= 768px) */
 @media (max-width: 768px) {
   header {
     height: auto;
-    min-height: 54px;
+    min-height: 52px;
     padding: 8px 12px;
     gap: 8px;
     flex-wrap: wrap;
@@ -685,7 +743,7 @@ main {
   }
 
   .app-title {
-    font-size: 1rem;
+    font-size: 0.98rem;
     font-weight: 700;
   }
 
@@ -705,7 +763,7 @@ main {
     border-radius: 6px;
   }
 
-  /* Main Stacking: Workspace First on Mobile! */
+  /* Main Stacking: Workspace at Top */
   main {
     display: flex;
     flex-direction: column;
@@ -713,10 +771,10 @@ main {
     overflow-y: visible;
   }
 
-  /* 1. Center Workspace at the Top */
+  /* 1. Center Workspace at Top */
   .workspace {
     order: 1;
-    min-height: 400px;
+    min-height: 380px;
     height: auto;
     border-bottom: 2px solid var(--border-color);
   }
@@ -767,8 +825,8 @@ main {
   }
 
   .canvas-wrapper {
-    height: 360px;
-    min-height: 320px;
+    height: 340px;
+    min-height: 300px;
   }
 
   .floating-controls {
@@ -783,25 +841,103 @@ main {
     font-size: 16px;
   }
 
-  /* 2. Left Sidebar (Palette, Tools, Presets) */
-  .sidebar {
-    order: 2;
-    height: auto;
-    border-right: none;
+  /* 2. Mobile Nav Tabs (Sticky under Canvas) */
+  .mobile-nav-tabs {
+    display: flex !important;
+    position: sticky;
+    bottom: 0;
+    z-index: 40;
+    background: rgba(19, 27, 46, 0.95);
+    backdrop-filter: blur(12px);
+    border-top: 1px solid var(--border-color);
     border-bottom: 1px solid var(--border-color);
-    padding: 12px;
-    gap: 14px;
+    padding: 6px 8px;
+    gap: 6px;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.45);
+  }
+
+  .m-tab {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 7px 2px;
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-sm);
+    color: var(--text-secondary);
+    font-size: 0.76rem;
+    font-weight: 600;
+    gap: 3px;
+    cursor: pointer;
+    transition: all 0.18s ease;
+    min-height: 48px;
+  }
+
+  .m-tab:hover {
+    color: var(--text-primary);
+  }
+
+  .m-tab.active {
+    background: rgba(56, 189, 248, 0.18);
+    color: var(--accent-primary);
+    border-color: var(--accent-primary);
+    box-shadow: 0 0 10px var(--accent-glow);
+  }
+
+  .m-tab-icon {
+    font-size: 1.15rem;
+    line-height: 1;
+  }
+
+  .m-tab-label {
+    letter-spacing: -0.02em;
+  }
+
+  /* Tab-based Panel Visibility Logic on Mobile */
+  body[data-mobile-tab="tools"] [data-panel]:not([data-panel="tools"]),
+  body[data-mobile-tab="3d"] [data-panel]:not([data-panel="3d"]),
+  body[data-mobile-tab="export"] [data-panel]:not([data-panel="export"]),
+  body[data-mobile-tab="presets"] [data-panel]:not([data-panel="presets"]) {
+    display: none !important;
+  }
+
+  body[data-mobile-tab="tools"] [data-panel="tools"],
+  body[data-mobile-tab="3d"] [data-panel="3d"],
+  body[data-mobile-tab="export"] [data-panel="export"],
+  body[data-mobile-tab="presets"] [data-panel="presets"] {
+    display: flex !important;
+    animation: fadeInTab 0.18s ease-out;
+  }
+
+  @keyframes fadeInTab {
+    from { opacity: 0; transform: translateY(4px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  /* Sidebars act as clean wrappers without borders */
+  .sidebar, .sidebar.right-sidebar {
+    order: 3;
+    background: transparent;
+    border: none;
+    padding: 10px 12px;
+    gap: 12px;
+    height: auto;
   }
 
   .panel-section {
     padding: 12px;
     gap: 10px;
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-md);
   }
 
   .section-title {
-    font-size: 0.88rem;
+    font-size: 0.9rem;
     font-weight: 700;
-    color: #CBD5E1;
+    color: #E2E8F0;
   }
 
   .custom-select {
@@ -839,32 +975,39 @@ main {
     padding: 6px;
   }
 
-  /* 3. Right Sidebar (3D Preview & Export Center) */
-  .sidebar.right-sidebar {
-    order: 3;
-    border-left: none;
-    padding: 12px;
-    gap: 14px;
-  }
-
+  /* 3D Container in Mobile Tab */
   .three-preview-container {
-    height: 280px;
+    height: 320px;
     aspect-ratio: unset;
     margin: 0 auto;
+    border-radius: var(--radius-md);
   }
 
   .three-hint {
-    font-size: 0.78rem;
+    font-size: 0.8rem;
     color: var(--text-secondary);
-    padding: 4px;
+    padding: 6px;
+    background: rgba(11, 15, 25, 0.7);
   }
 
-  .export-grid {
+  /* Export Action Grid on Mobile */
+  .export-actions-grid {
     gap: 8px;
   }
 
-  .form-group label {
+  .export-actions-grid .btn-primary,
+  .export-actions-grid .btn-secondary {
+    min-height: 44px;
+    font-size: 0.88rem;
+  }
+
+  .usage-guide-card {
+    padding: 12px;
+  }
+
+  .guide-item {
     font-size: 0.85rem;
+    padding: 9px 10px;
   }
 }
 

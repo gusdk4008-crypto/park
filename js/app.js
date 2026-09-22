@@ -510,6 +510,25 @@ document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('btnExportSVG').addEventListener('click', exportSVGAction);
     document.getElementById('btnExport3DImage').addEventListener('click', export3DAction);
     document.getElementById('btnExportAllFacesSheet').addEventListener('click', exportAllFacesAction);
+
+    // Mobile Category Tabs Navigation
+    setupMobileTabs();
+  }
+
+  function setupMobileTabs() {
+    document.body.setAttribute('data-mobile-tab', 'tools');
+    const tabs = document.querySelectorAll('.m-tab');
+    tabs.forEach(tab => {
+      tab.addEventListener('click', () => {
+        tabs.forEach(t => t.classList.remove('active'));
+        tab.classList.add('active');
+        const target = tab.dataset.tab;
+        document.body.setAttribute('data-mobile-tab', target);
+        if (target === '3d' && App.view3D) {
+          setTimeout(() => App.view3D.resize(), 50);
+        }
+      });
+    });
   }
 
   function setPaletteTab(type, targetEl) {

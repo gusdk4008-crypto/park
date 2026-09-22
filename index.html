@@ -35,7 +35,7 @@
     <!-- LEFT SIDEBAR: Puzzles, Palettes & Tools -->
     <aside class="sidebar">
       <!-- 1. Cube Selection -->
-      <div class="panel-section">
+      <div class="panel-section" data-panel="tools">
         <div class="section-title">
           <span>큐브 종류 선택</span>
           <span style="font-size: 0.75rem; color: var(--accent-primary);" id="cubeCategoryLabel">정육면체</span>
@@ -63,7 +63,7 @@
       </div>
 
       <!-- 2. Color Palette -->
-      <div class="panel-section">
+      <div class="panel-section" data-panel="tools">
         <div class="section-title">
           <span>컬러 팔레트</span>
           <div class="segmented-control" style="font-size: 0.72rem; padding: 2px;">
@@ -89,7 +89,7 @@
       </div>
 
       <!-- 3. Coloring Tools -->
-      <div class="panel-section">
+      <div class="panel-section" data-panel="tools">
         <div class="section-title">
           <span>색칠 도구</span>
         </div>
@@ -114,7 +114,7 @@
       </div>
 
       <!-- 4. Quick Pattern Presets -->
-      <div class="panel-section">
+      <div class="panel-section" data-panel="presets">
         <div class="section-title">
           <span>빠른 패턴 프리셋</span>
         </div>
@@ -188,78 +188,115 @@
           <button class="icon-btn" id="btnResetView" title="위치/확대 리셋">🎯</button>
         </div>
       </div>
+
+      <!-- Mobile Category Navigation Bar (Visible only on mobile/tablet <= 860px) -->
+      <nav class="mobile-nav-tabs" id="mobileNavTabs">
+        <button class="m-tab active" data-tab="tools">
+          <span class="m-tab-icon">🎨</span>
+          <span class="m-tab-label">색칠&팔레트</span>
+        </button>
+        <button class="m-tab" data-tab="3d">
+          <span class="m-tab-icon">🧊</span>
+          <span class="m-tab-label">3D 큐브</span>
+        </button>
+        <button class="m-tab" data-tab="export">
+          <span class="m-tab-icon">💾</span>
+          <span class="m-tab-label">이미지 저장</span>
+        </button>
+        <button class="m-tab" data-tab="presets">
+          <span class="m-tab-icon">💡</span>
+          <span class="m-tab-label">프리셋&팁</span>
+        </button>
+      </nav>
     </section>
 
     <!-- RIGHT SIDEBAR: 3D Preview & Export Center -->
     <aside class="sidebar right-sidebar">
       <!-- 1. 3D Interactive Preview -->
-      <div class="panel-section">
+      <div class="panel-section" data-panel="3d">
         <div class="section-title">
-          <span>3D 인터랙티브 뷰</span>
-          <button class="btn-preset" id="btnReset3D" style="padding: 2px 8px; font-size: 0.72rem;">각도 리셋</button>
+          <span>3D 인터랙티브 큐브</span>
+          <button class="btn-preset" id="btnReset3D" style="padding: 4px 10px; font-size: 0.8rem;">🎯 각도 리셋</button>
         </div>
         <div class="three-preview-container" id="threeContainer">
-          <div class="three-hint">마우스로 드래그하여 360° 회전 / 3D에서도 클릭 색칠 가능</div>
+          <div class="three-hint">👆 손가락/마우스로 드래그하여 360° 회전 (클릭하여 직접 색칠 가능)</div>
         </div>
       </div>
 
       <!-- 2. Export & Save Options -->
-      <div class="panel-section">
+      <div class="panel-section" data-panel="export">
         <div class="section-title">
           <span>이미지 저장 & 내보내기</span>
         </div>
 
-        <div class="form-group">
-          <label class="form-label">해상도 배율 (Scale)</label>
-          <select id="exportScale" class="custom-select" style="padding: 6px 10px;">
-            <option value="1">1x (기본 웹/화면용)</option>
-            <option value="2" selected>2x (고해상도 HD - 문서/보고서용)</option>
-            <option value="4">4x (초고해상도 Ultra-HD - 인쇄/출판용)</option>
-          </select>
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px;">
+          <div class="form-group">
+            <label class="form-label">해상도 배율 (Scale)</label>
+            <select id="exportScale" class="custom-select" style="padding: 8px 10px;">
+              <option value="1">1x (기본 화면용)</option>
+              <option value="2" selected>2x (고해상도 HD)</option>
+              <option value="4">4x (초고화질 인쇄용)</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">배경 투명도</label>
+            <select id="exportBg" class="custom-select" style="padding: 8px 10px;">
+              <option value="transparent" selected>투명 배경 (PNG)</option>
+              <option value="#FFFFFF">흰색 배경</option>
+              <option value="#0F172A">다크 배경</option>
+            </select>
+          </div>
         </div>
 
-        <div class="form-group">
-          <label class="form-label">배경 옵션</label>
-          <select id="exportBg" class="custom-select" style="padding: 6px 10px;">
-            <option value="transparent" selected>투명 배경 (PNG 전용)</option>
-            <option value="#FFFFFF">흰색 배경 (깔끔한 인쇄용)</option>
-            <option value="#0F172A">다크 배경</option>
-          </select>
-        </div>
+        <!-- Compact Responsive Action Grid -->
+        <div class="export-actions-grid">
+          <button class="btn-primary" id="btnExportCurrentPNG" style="grid-column: span 2;">
+            <span>📥</span> 현재 단면 고해상도 PNG 저장
+          </button>
 
-        <!-- Primary Actions -->
-        <button class="btn-primary" id="btnExportCurrentPNG" style="width: 100%;">
-          <span>📥</span> 현재 단면 고해상도 PNG 다운로드
-        </button>
+          <button class="btn-secondary btn-copy-highlight" id="btnCopyCurrentClipboard" style="grid-column: span 2; border-color: var(--accent-primary); color: var(--accent-primary); font-weight: 600;">
+            <span>📋</span> 클립보드 복사 (한글/PPT 즉시 붙여넣기)
+          </button>
 
-        <button class="btn-secondary" id="btnCopyCurrentClipboard" style="width: 100%; border-color: var(--accent-primary); color: var(--accent-primary);">
-          <span>📋</span> 클립보드 복사 (한글/PPT 즉시 붙여넣기)
-        </button>
-
-        <div class="export-grid">
           <button class="btn-secondary" id="btnExportJPG">
             <span>🖼️</span> JPG 저장
           </button>
           <button class="btn-secondary" id="btnExportSVG">
-            <span>📐</span> SVG 벡터 저장
+            <span>📐</span> SVG 벡터
+          </button>
+          <button class="btn-secondary" id="btnExport3DImage">
+            <span>🧊</span> 3D 각도 캡처
+          </button>
+          <button class="btn-secondary" id="btnExportAllFacesSheet" style="background: rgba(99, 102, 241, 0.15); border-color: rgba(99, 102, 241, 0.3); color: #A5B4FC;">
+            <span>📑</span> 전체 단면 시트
           </button>
         </div>
-
-        <button class="btn-secondary" id="btnExport3DImage" style="width: 100%;">
-          <span>🧊</span> 현재 3D 큐브 각도 캡처 저장
-        </button>
-
-        <button class="btn-secondary" id="btnExportAllFacesSheet" style="width: 100%; background: rgba(99, 102, 241, 0.15); border-color: rgba(99, 102, 241, 0.3); color: #A5B4FC;">
-          <span>📑</span> 모든 면 종합 시트 한 번에 저장
-        </button>
       </div>
 
       <!-- Quick Usage Guide -->
-      <div class="panel-section" style="font-size: 0.78rem; color: var(--text-muted); line-height: 1.5;">
-        <div style="font-weight: 600; color: var(--text-secondary); margin-bottom: 4px;">💡 사용 꿀팁:</div>
-        • <strong>마우스 드래그</strong>: 연속으로 여러 조각을 빠르게 칠할 수 있습니다.<br>
-        • <strong>Alt + 클릭</strong>: 화면의 조각 색상을 즉시 스포이드로 추출합니다.<br>
-        • <strong>클립보드 복사</strong>를 누른 뒤 한글(HWP), PPT, Word에서 <strong>Ctrl+V</strong>를 누르면 바로 삽입됩니다!
+      <div class="panel-section usage-guide-card" data-panel="presets">
+        <div class="section-title">
+          <span>💡 사용 꿀팁 & 안내</span>
+        </div>
+        <div class="guide-items">
+          <div class="guide-item">
+            <span class="guide-icon">👆</span>
+            <div><strong>터치 / 클릭 색칠</strong>: 조각을 터치하거나 문지르면 연속으로 빠르게 칠해집니다.</div>
+          </div>
+          <div class="guide-item">
+            <span class="guide-icon">🧊</span>
+            <div><strong>3D 입체 회전</strong>: [3D 큐브] 탭에서 손가락으로 드래그해 360도 자유롭게 돌려보세요.</div>
+          </div>
+          <div class="guide-item">
+            <span class="guide-icon">📋</span>
+            <div><strong>클립보드 복사</strong>: 복사 후 한글(HWP), PPT, Word에서 <strong>Ctrl+V</strong>를 누르면 바로 삽입됩니다!</div>
+          </div>
+          <div class="guide-item">
+            <span class="guide-icon">💉</span>
+            <div><strong>스포이드 추출</strong>: 스포이드(💉) 도구를 누르고 원하는 조각을 누르면 해당 색상이 바로 선택됩니다.</div>
+          </div>
+        </div>
       </div>
     </aside>
   </main>
