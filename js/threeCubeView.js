@@ -83,14 +83,14 @@ class ThreeCubeView {
     let isDragging = false;
     let downPos = { x: 0, y: 0 };
 
-    dom.addEventListener('mousedown', (e) => {
+    dom.addEventListener('pointerdown', (e) => {
       downPos = { x: e.clientX, y: e.clientY };
       isDragging = false;
     });
 
-    dom.addEventListener('mousemove', (e) => {
+    dom.addEventListener('pointermove', (e) => {
       const dist = Math.hypot(e.clientX - downPos.x, e.clientY - downPos.y);
-      if (dist > 4) isDragging = true;
+      if (dist > 6) isDragging = true;
 
       const rect = dom.getBoundingClientRect();
       this.mouse.x = ((e.clientX - rect.left) / rect.width) * 2 - 1;
@@ -99,8 +99,11 @@ class ThreeCubeView {
       this.checkHover();
     });
 
-    dom.addEventListener('mouseup', (e) => {
-      if (!isDragging && e.button === 0) {
+    dom.addEventListener('pointerup', (e) => {
+      if (!isDragging && (e.button === 0 || e.pointerType === 'touch' || e.pointerType === 'pen')) {
+        const rect = dom.getBoundingClientRect();
+        this.mouse.x = ((e.clientX - rect.left) / rect.width) * 2 - 1;
+        this.mouse.y = -((e.clientY - rect.top) / rect.height) * 2 + 1;
         this.handleClick(e);
       }
     });

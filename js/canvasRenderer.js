@@ -70,20 +70,30 @@ class CubeCanvasRenderer {
   initEvents() {
     const cvs = this.canvas;
 
-    cvs.addEventListener('mousedown', (e) => {
-      if (e.button === 1 || (e.button === 0 && e.shiftKey)) { // Middle button or Shift+Left for Pan
+    const getPos = (e) => {
+      const rect = cvs.getBoundingClientRect();
+      return {
+        x: e.clientX - rect.left,
+        y: e.clientY - rect.top
+      };
+    };
+
+    cvs.addEventListener('pointerdown', (e) => {
+      if (e.pointerType === 'mouse' && (e.button === 1 || (e.button === 0 && e.shiftKey))) {
         this.isPanning = true;
         this.panStart = { x: e.clientX - this.pan.x, y: e.clientY - this.pan.y };
         cvs.style.cursor = 'grab';
+        try { cvs.setPointerCapture(e.pointerId); } catch (_) {}
         return;
       }
-      if (e.button === 0) {
+      if (e.button === 0 || e.pointerType === 'touch' || e.pointerType === 'pen') {
         this.isPainting = true;
         this.handlePointerAction(e);
+        try { cvs.setPointerCapture(e.pointerId); } catch (_) {}
       }
     });
 
-    window.addEventListener('mousemove', (e) => {
+    window.addEventListener('pointermove', (e) => {
       if (this.isPanning) {
         this.pan.x = e.clientX - this.panStart.x;
         this.pan.y = e.clientY - this.panStart.y;
@@ -91,12 +101,9 @@ class CubeCanvasRenderer {
         return;
       }
 
-      const rect = cvs.getBoundingClientRect();
-      const clientX = e.clientX - rect.left;
-      const clientY = e.clientY - rect.top;
-
-      if (clientX >= 0 && clientX <= rect.width && clientY >= 0 && clientY <= rect.height) {
-        const hit = this.hitTest(clientX, clientY);
+      const pos = getPos(e);
+      if (pos.x >= 0 && pos.x <= cvs.clientWidth && pos.y >= 0 && pos.y <= cvs.clientHeight) {
+        const hit = this.hitTest(pos.x, pos.y);
         if (hit !== this.hoveredItem) {
           this.hoveredItem = hit;
           this.render();
@@ -112,11 +119,15 @@ class CubeCanvasRenderer {
       }
     });
 
-    window.addEventListener('mouseup', () => {
+    const endPointer = (e) => {
       this.isPanning = false;
       this.isPainting = false;
       cvs.style.cursor = 'default';
-    });
+      try { cvs.releasePointerCapture(e.pointerId); } catch (_) {}
+    };
+
+    window.addEventListener('pointerup', endPointer);
+    window.addEventListener('pointercancel', endPointer);
 
     cvs.addEventListener('wheel', (e) => {
       e.preventDefault();

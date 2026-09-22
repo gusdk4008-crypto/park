@@ -486,12 +486,15 @@ document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('btnUndo').addEventListener('click', undo);
     document.getElementById('btnRedo').addEventListener('click', redo);
 
-    // Save history on mouseup after painting
-    window.addEventListener('mouseup', () => {
-      if (App.renderer2D.isPainting) {
+    // Save history on pointerup/mouseup after painting
+    const onActionEnd = () => {
+      if (App.renderer2D && App.renderer2D.isPainting) {
         saveHistoryState();
       }
-    });
+    };
+    window.addEventListener('mouseup', onActionEnd);
+    window.addEventListener('pointerup', onActionEnd);
+    window.addEventListener('touchend', onActionEnd);
 
     // ==========================================
     // EXPORT & CLIPBOARD ACTIONS
